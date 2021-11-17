@@ -59,8 +59,23 @@ def get_ranking(log_probs, masked_indices, vocab, label_index = None, index_list
     result_masked_topk, return_msg = __print_top_k(value_max_probs, index_max_probs, vocab, topk, index_list)
     experiment_result['topk'] = result_masked_topk
 
-    if print_generation:
-        print(return_msg)
+    if print_generation: # args.interactive
+        print("from get_ranking()\n", return_msg)
+        
+        """
+        something like...
+        | Top10 predictions
+        0       noisy               -8.452      
+        1       northern            -8.518      
+        2       valuable            -8.528      
+        3       protested           -8.534      
+        4       charting            -8.571      
+        5       oblique             -8.599      
+        6       bonding             -8.650      
+        7       262                 -8.694      
+        8       clarke              -8.702      
+        9       sweets              -8.705
+        """
 
     MRR = 0.
     P_AT_X = 0.

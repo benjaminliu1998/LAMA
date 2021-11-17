@@ -5,8 +5,8 @@
 # LICENSE file in the root directory of this source tree.
 #
 import argparse
-from batch_eval_KB_completion import main as run_evaluation
-from batch_eval_KB_completion import load_file
+from batch_eval_KB_completion_for_prediction import main as run_evaluation
+from batch_eval_KB_completion_for_prediction import *
 from lama.modules import build_model_by_name
 import pprint
 import statistics
@@ -18,44 +18,47 @@ from collections import defaultdict
 
 LMs = [
     {
-        "lm": "transformerxl",
-        "label": "transformerxl",
-        "models_names": ["transformerxl"],
-        "transformerxl_model_name": "transfo-xl-wt103",
-        "transformerxl_model_dir": "pre-trained_language_models/transformerxl/transfo-xl-wt103/",
+        "lm": "bert",
+        "label": "multiberts-seed_3-step_2000k",
+        "models_names": ["bert"],
+        "bert_model_name": "google/multiberts-seed_3-step_2000k",
+        "bert_model_dir": "pre-trained_language_models/bert/multiberts-seed_3-step_2000k",
     },
     {
-        "lm": "elmo",
-        "label": "elmo",
-        "models_names": ["elmo"],
-        "elmo_model_name": "elmo_2x4096_512_2048cnn_2xhighway",
-        "elmo_vocab_name": "vocab-2016-09-10.txt",
-        "elmo_model_dir": "pre-trained_language_models/elmo/original",
-        "elmo_warm_up_cycles": 10,
+        "lm": "bert",
+        "label": "multiberts-seed_0-step_2000k",
+        "models_names": ["bert"],
+        "bert_model_name": "google/multiberts-seed_0-step_2000k",
+        "bert_model_dir": "pre-trained_language_models/bert/multiberts-seed_0-step_2000k",
     },
     {
-        "lm": "elmo",
-        "label": "elmo5B",
-        "models_names": ["elmo"],
-        "elmo_model_name": "elmo_2x4096_512_2048cnn_2xhighway_5.5B",
-        "elmo_vocab_name": "vocab-enwiki-news-500000.txt",
-        "elmo_model_dir": "pre-trained_language_models/elmo/original5.5B/",
-        "elmo_warm_up_cycles": 10,
+        "lm": "bert",
+        "label": "multiberts-seed_1-step_2000k",
+        "models_names": ["bert"],
+        "bert_model_name": "google/multiberts-seed_1-step_2000k",
+        "bert_model_dir": "pre-trained_language_models/bert/multiberts-seed_1-step_2000k",
+    },
+    {
+        "lm": "bert",
+        "label": "multiberts-seed_0-step_0k",
+        "models_names": ["bert"],
+        "bert_model_name": "google/multiberts-seed_0-step_0k",
+        "bert_model_dir": "pre-trained_language_models/bert/multiberts-seed_0-step_0k",
     },
     {
         "lm": "bert",
         "label": "bert_base",
         "models_names": ["bert"],
-        "bert_model_name": "bert-base-cased",
-        "bert_model_dir": "pre-trained_language_models/bert/cased_L-12_H-768_A-12",
+        "bert_model_name": "bert-base-uncased",
+        "bert_model_dir": "pre-trained_language_models/bert/uncased_L-12_H-768_A-12",
     },
-    {
-        "lm": "bert",
-        "label": "bert_large",
-        "models_names": ["bert"],
-        "bert_model_name": "bert-large-cased",
-        "bert_model_dir": "pre-trained_language_models/bert/cased_L-24_H-1024_A-16",
-    },
+    # {
+    #     "lm": "bert",
+    #     "label": "bert_base",
+    #     "models_names": ["bert"],
+    #     "bert_model_name": "bert-base-cased",
+    #     "bert_model_dir": "pre-trained_language_models/bert/cased_L-12_H-768_A-12",
+    # },
 ]
 
 
@@ -87,18 +90,18 @@ def run_experiments(
             "dataset_filename": "{}{}{}".format(
                 data_path_pre, relation["relation"], data_path_post
             ),
-            "common_vocab_filename": "pre-trained_language_models/common_vocab_cased.txt",
+            "common_vocab_filename": "pre-trained_language_models/common_vocab_lowercased.txt", # changed from cased to lowercased
             "template": "",
             "bert_vocab_name": "vocab.txt",
-            "batch_size": 32,
+            "batch_size": 1, # was 32
             "logdir": "output",
             "full_logdir": "output/results/{}/{}".format(
                 input_param["label"], relation["relation"]
             ),
-            "lowercase": False,
+            "lowercase": True, # changed here from False to True to run on lowercased
             "max_sentence_length": 100,
             "threads": -1,
-            "interactive": False,
+            "interactive": True, # changed to True. In run_thread(), will compute perplexity and print predictions for the complete log_probs tensor
             "use_negated_probes": use_negated_probes,
         }
 
@@ -188,7 +191,7 @@ def get_GoogleRE_parameters():
 
 
 def get_ConceptNet_parameters(data_path_pre="data/"):
-    relations = [{"relation": "test"}]
+    relations = [{"relation": "test_new"}] # changed from test to test_new
     data_path_pre += "ConceptNet/"
     data_path_post = ".jsonl"
     return relations, data_path_pre, data_path_post
@@ -204,22 +207,22 @@ def get_Squad_parameters(data_path_pre="data/"):
 def run_all_LMs(parameters):
     for ip in LMs:
         print(ip["label"])
-        run_experiments(*parameters, input_param=ip, use_negated_probes=False, lowercase=True) # added lowercase=True
+        run_experiments(*parameters, input_param=ip, use_negated_probes=False)
 
 
 if __name__ == "__main__":
 
-    print("1. Google-RE")
-    parameters = get_GoogleRE_parameters()
-    run_all_LMs(parameters)
+    # print("1. Google-RE")
+    # parameters = get_GoogleRE_parameters()
+    # run_all_LMs(parameters)
 
-    print("2. T-REx")
-    parameters = get_TREx_parameters()
-    run_all_LMs(parameters)
+    # print("2. T-REx")
+    # parameters = get_TREx_parameters()
+    # run_all_LMs(parameters)
 
-    print("3. ConceptNet")
-    parameters = get_ConceptNet_parameters()
-    run_all_LMs(parameters)
+    # print("3. ConceptNet")
+    # parameters = get_ConceptNet_parameters()
+    # run_all_LMs(parameters)
 
     print("4. SQuAD")
     parameters = get_Squad_parameters()

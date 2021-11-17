@@ -8,8 +8,9 @@ import torch
 import pytorch_pretrained_bert.tokenization as btok
 from pytorch_pretrained_bert import BertTokenizer, BertForMaskedLM, BasicTokenizer, BertModel
 import numpy as np
-from lama.modules.base_connector import *
+from .base_connector import *
 import torch.nn.functional as F
+# from transformers import AutoTokenizer, AutoModelForPreTraining # added
 
 
 class CustomBaseTokenizer(BasicTokenizer):
@@ -66,11 +67,12 @@ class Bert(Base_Connector):
 
         # When using a cased model, make sure to pass do_lower_case=False directly to BaseTokenizer
         do_lower_case = False
-        if 'uncased' in bert_model_name:
+        if 'uncased' in bert_model_name or 'multiberts' in bert_model_name: # added multiberts
             do_lower_case=True
 
         # Load pre-trained model tokenizer (vocabulary)
         self.tokenizer = BertTokenizer.from_pretrained(dict_file)
+        #self.tokenizer = AutoTokenizer.from_pretrained(dict_file) # added
 
         # original vocab
         self.map_indices = None
@@ -84,6 +86,7 @@ class Bert(Base_Connector):
         # Load pre-trained model (weights)
         # ... to get prediction/generation
         self.masked_bert_model = BertForMaskedLM.from_pretrained(bert_model_name)
+        #self.masked_bert_model = AutoModelForPreTraining.from_pretrained(bert_model_name) # added
 
         self.masked_bert_model.eval()
 
@@ -212,6 +215,7 @@ class Bert(Base_Connector):
 
     def get_batch_generation(self, sentences_list, logger= None,
                              try_cuda=True):
+        """the function to get the probabilities"""
         if not sentences_list:
             return None
         if try_cuda:

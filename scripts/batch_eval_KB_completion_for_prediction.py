@@ -201,7 +201,7 @@ def run_thread_negated(arguments):
 
 
 def lowercase_samples(samples, use_negated_probes=False):
-    print("Debugging: Using lowercase")
+    print("Confirmed; Using lowercase")
     new_samples = []
     for sample in samples:
         sample["obj_label"] = sample["obj_label"].lower()
@@ -487,6 +487,9 @@ def main(args, shuffle_data=True, model=None):
             )
         else:
             filtered_log_probs_list = original_log_probs_list
+        
+        print("sentences_b:", sentences_b) # added
+        print("filtered_log_probs_list:", filtered_log_probs_list.shape, filtered_log_probs_list) # added; the shape is something like [1, 10, 23325], 10 is the number of tokens and 23325 is the vocab size. each element is the logprob of each word in vocab
 
         label_index_list = []
         for sample in samples_b:
@@ -702,7 +705,7 @@ def main(args, shuffle_data=True, model=None):
 
     # dump pickle with the result of the experiment
     all_results = dict(
-        list_of_results=list_of_results, global_MRR=MRR, global_P_at_10=Precision, global_P_at_1=Precision1 # global_P_at_1=Precision1
+        list_of_results=list_of_results, global_MRR=MRR, global_P_at_10=Precision, global_P_at_1=Precision1 # added global_P_at_1=Precision1
     )
     with open("{}/result.pkl".format(log_directory), "wb") as f:
         pickle.dump(all_results, f)

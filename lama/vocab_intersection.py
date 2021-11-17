@@ -4,11 +4,11 @@
 # This source code is licensed under the license found in the
 # LICENSE file in the root directory of this source tree.
 #
-from lama.modules import build_model_by_name
+from modules import build_model_by_name
 from tqdm import tqdm
 import argparse
 import spacy
-import lama.modules.base_connector as base
+from modules import base_connector as base
 
 
 CASED_MODELS = [
@@ -21,27 +21,27 @@ CASED_MODELS = [
   #   "cpu": True,
   #   "output_dictionary_size": -1
   # },
-  {
-    # "TransformerXL"
-    "lm": "transformerxl",
-    "transformerxl_model_dir": "pre-trained_language_models/transformerxl/transfo-xl-wt103/",
-  },
-  {
-    # "ELMO ORIGINAL"
-    "lm": "elmo",
-    "elmo_model_dir": "pre-trained_language_models/elmo/original",
-    "elmo_model_name": "elmo_2x4096_512_2048cnn_2xhighway",
-    "elmo_vocab_name": "vocab-2016-09-10.txt",
-    "elmo_warm_up_cycles": 5
-  },
-  {
-    # "ELMO ORIGINAL 5.5B"
-    "lm": "elmo",
-    "elmo_model_dir": "pre-trained_language_models/elmo/original5.5B/",
-    "elmo_model_name": "elmo_2x4096_512_2048cnn_2xhighway_5.5B",
-    "elmo_vocab_name": "vocab-enwiki-news-500000.txt",
-    "elmo_warm_up_cycles": 5
-  },
+  # {
+  #   # "TransformerXL"
+  #   "lm": "transformerxl",
+  #   "transformerxl_model_dir": "pre-trained_language_models/transformerxl/transfo-xl-wt103/",
+  # },
+  # {
+  #   # "ELMO ORIGINAL"
+  #   "lm": "elmo",
+  #   "elmo_model_dir": "pre-trained_language_models/elmo/original",
+  #   "elmo_model_name": "elmo_2x4096_512_2048cnn_2xhighway",
+  #   "elmo_vocab_name": "vocab-2016-09-10.txt",
+  #   "elmo_warm_up_cycles": 5
+  # },
+  # {
+  #   # "ELMO ORIGINAL 5.5B"
+  #   "lm": "elmo",
+  #   "elmo_model_dir": "pre-trained_language_models/elmo/original5.5B/",
+  #   "elmo_model_name": "elmo_2x4096_512_2048cnn_2xhighway_5.5B",
+  #   "elmo_vocab_name": "vocab-enwiki-news-500000.txt",
+  #   "elmo_warm_up_cycles": 5
+  # },
   {
     # "BERT BASE CASED"
     "lm": "bert",
@@ -49,13 +49,13 @@ CASED_MODELS = [
     "bert_model_dir": "pre-trained_language_models/bert/cased_L-12_H-768_A-12/",
     "bert_vocab_name": "vocab.txt"
   },
-  {
-    # "BERT LARGE CASED"
-    "lm" : "bert",
-    "bert_model_name": "bert-large-cased",
-    "bert_model_dir": "pre-trained_language_models/bert/cased_L-24_H-1024_A-16/",
-    "bert_vocab_name": "vocab.txt"
-  }
+  # {
+  #   # "BERT LARGE CASED"
+  #   "lm" : "bert",
+  #   "bert_model_name": "bert-large-cased",
+  #   "bert_model_dir": "pre-trained_language_models/bert/cased_L-24_H-1024_A-16/",
+  #   "bert_vocab_name": "vocab.txt"
+  # }
 ]
 
 CASED_COMMON_VOCAB_FILENAME = "pre-trained_language_models/common_vocab_cased.txt"
@@ -65,23 +65,40 @@ LOWERCASED_MODELS = [
    # "BERT BASE UNCASED"
    "lm": "bert",
    "bert_model_name": "bert-base-uncased",
-   "bert_model_dir": None,
+   "bert_model_dir": "pre-trained_language_models/bert/uncased_L-12_H-768_A-12/", # changed from None
    "bert_vocab_name": "vocab.txt"
  },
- {
-   # "BERT LARGE UNCASED"
-   "lm": "bert",
-   "bert_model_name": "bert-large-uncased",
-   "bert_model_dir": None,
-   "bert_vocab_name": "vocab.txt"
- },
- {
-   # "OpenAI GPT"
-   "lm": "gpt",
-   "gpt_model_dir": None,
-   "gpt_model_name": "openai-gpt"
- }
+#  {
+#    # "Multiberts seed 0 step 0k"
+#    "lm": "bert",
+#    "bert_model_name": "google/multiberts-seed_0-step_0k",
+#    "bert_model_dir": "pre-trained_language_models/bert/multiberts-seed_0-step_0k/", # changed from None
+#    "bert_vocab_name": "vocab.txt"
+#  },
+#  {
+#    # "BERT LARGE UNCASED"
+#    "lm": "bert",
+#    "bert_model_name": "bert-large-uncased",
+#    "bert_model_dir": None,
+#    "bert_vocab_name": "vocab.txt"
+#  },
+#  {
+#    # "OpenAI GPT"
+#    "lm": "gpt",
+#    "gpt_model_dir": None,
+#    "gpt_model_name": "openai-gpt"
+#  }
 ]
+
+for seed in range(5):
+  for ckpt in ['0', '400', '800', '1200', '1600', '2000']:
+    LOWERCASED_MODELS.append({
+                              # "seed and checkpoint"
+                              "lm": "bert",
+                              "bert_model_name": "google/multiberts-seed_"+str(seed)+"-step_"+ckpt+"k",
+                              "bert_model_dir": "pre-trained_language_models/bert/multiberts-seed_"+str(seed)+"-step_"+ckpt+"k/", # changed from None
+                              "bert_vocab_name": "vocab.txt"
+                            })
 
 LOWERCASED_COMMON_VOCAB_FILENAME = "pre-trained_language_models/common_vocab_lowercased.txt"
 
