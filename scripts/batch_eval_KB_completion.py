@@ -5,7 +5,8 @@
 # LICENSE file in the root directory of this source tree.
 #
 import sys
-sys.path.insert(1, '/content/drive/MyDrive/G2 2021 Fall/AC 297R Capstone/LAMAProbing_Copy/LAMA-main/')
+# curr path is LAMA/scripts
+sys.path.insert(1, '../LAMA/')
 print(sys.path)
 from lama.modules import build_model_by_name
 import lama.utils as utils

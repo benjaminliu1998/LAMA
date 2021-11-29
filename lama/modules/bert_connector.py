@@ -63,7 +63,9 @@ class Bert(Base_Connector):
             print("loading BERT model from {}".format(bert_model_name))
         else:
             # load bert model from huggingface cache
-            pass
+            dict_file = "pre-trained_language_models/bert/" + bert_model_name[7:] + "/vocab.txt"
+            self.dict_file = dict_file
+            print("loading BERT model from {}".format(bert_model_name))
 
         # When using a cased model, make sure to pass do_lower_case=False directly to BaseTokenizer
         do_lower_case = False
